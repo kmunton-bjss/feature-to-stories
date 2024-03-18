@@ -8,9 +8,19 @@
 </head>
 <body>
   <div style="display: flex; flex-direction: column; align-items: center; justify-content: space-evenly;">
-    <a href="/">Go back to start again</a>
+    <p><a href="/">Home</a> / Stories</p>
   </div>
+  {% if feature %}
+    <h1>Feature: {{ feature }}</h1>
+  {% endif %}
+  {% if id %}
+    <form id="code" action="/stories/test-code" method="post">
+      <input form="code" name="id" value="{{ id }}" hidden/>
+      <button type="submit" style="cursor: pointer;">Generate Playwright Test Code</button>
+    </form>
+  {% endif %}
   {% if html %}
+    <h2>Stories</h2>
     {{ html |safe }}
   {% endif %}
 </body>
