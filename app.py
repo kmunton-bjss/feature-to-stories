@@ -89,7 +89,7 @@ def test_code():
       {
           "role": "user", "content": f"""Based on stories and test scenarios, 
           create sample code for each test scenario. 
-          Use playwright, jest and javascript for the code. 
+          Use Playwright, Jest and JavaScript for the code. 
           
           Return the answer in this HTML format for each test scenario: {HTML_TEST_FORMAT} 
 
@@ -116,21 +116,27 @@ HTML_STORIES_FORMAT = """
 <h4>End to end test scenarios</h4>
 <h5>Positive</h5>
 <ul>
-  <li>{{ scenario and test data }}</li>
-  <li>{{ scenario and test data }}</li>
-  <li>{{ scenario and test data }}</li>
+  <li>
+    <p><strong>scenario</strong>: {{ scenario }}</p>
+    <p><strong>expected result</strong>: {{ expected result }}</p>
+    <p><strong>test data</strong>: {{ test data }}</p>
+  </li>
 </ul>
 <h5>Negative</h5>
 <ul>
-  <li>{{ scenario and test data }}</li>
-  <li>{{ scenario and test data }}</li>
-  <li>{{ scenario and test data }}</li>
+  <li>
+    <p><strong>scenario</strong>: {{ scenario }}</p>
+    <p><strong>expected result</strong>: {{ expected result }}</p>
+    <p><strong>test data</strong>: {{ test data }}</p>
+  </li>
 </ul>
 <h5>Edge cases</h5>
 <ul>
-  <li>{{ scenario and test data }}</li>
-  <li>{{ scenario and test data }}</li>
-  <li>{{ scenario and test data }}</li>
+  <li>
+    <p><strong>scenario</strong>: {{ scenario }}</p>
+    <p><strong>expected result</strong>: {{ expected result }}</p>
+    <p><strong>test data</strong>: {{ test data }}</p>
+  </li>
 </ul>
 """
 
