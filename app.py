@@ -91,8 +91,16 @@ def stories_result():
 
 @app.post("/stories/tests")
 def test_code():
+  stories_not_found_msg = "Cannot find stories to generate tests from. Go back to home page and start again."
+  
   id = request.form.get("id")
+  if not id:
+    return render_template("error.html", error=stories_not_found_msg)
+
   res = queries.get(id)
+  if not res:
+    return render_template("error.html", error=stories_not_found_msg)
+
   title = res.get("title")
   feature = res.get("feature")
   
