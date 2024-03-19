@@ -4,13 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
-  <title>Test Code</title>
+  <title>Tests</title>
 </head>
 <body>
   {% if id %}
     <div style="display: flex; flex-direction: column; align-items: center; justify-content: space-evenly;">
-      <p><a href="/">Home</a> / <a href="/stories?id={{ id }}">Stories</a> / <strong>Test Code</strong></p>
+      <p><a href="/">Home</a> / <a href="/stories?id={{ id }}">Stories</a> / <strong>Tests</strong></p>
     </div>
+  {% endif %}
+  {% if title %}
+    <h1>Feature: {{ title }}</h1>
   {% endif %}
   {% if html %}
     {{ html |safe }}

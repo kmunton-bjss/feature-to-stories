@@ -10,13 +10,16 @@
   <div style="display: flex; flex-direction: column; align-items: center; justify-content: space-evenly;">
     <p><a href="/">Home</a> / <strong>Stories</strong></p>
   </div>
+  {% if title %}
+    <h1>Feature: {{ title }}</h1>
+  {% endif %}
   {% if feature %}
-    <h1>Feature: {{ feature }}</h1>
+    <p>{{ feature }}</p>
   {% endif %}
   {% if id %}
-    <form id="code" action="/stories/test-code" method="post">
+    <form id="code" action="/stories/tests" method="post">
       <input form="code" name="id" value="{{ id }}" hidden/>
-      <button type="submit" style="cursor: pointer;">Generate Test Code Using Playwright, Jest And JavaScript</button>
+      <button type="submit" style="cursor: pointer;">Generate Test Scenarios</button>
     </form>
   {% endif %}
   {% if html %}
