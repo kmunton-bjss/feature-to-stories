@@ -47,14 +47,14 @@ def stories_result():
   
   completionStories = client.chat.completions.create(
     model=openai_deployment, # model = "deployment_name".
-    temperature=0.5,
+    temperature=0.1,
     messages=[
       {
           "role": "system", "content": "Act as a business analyst"
       },
       {
           "role": "user", "content": f"""Create a list of JIRA stories, also known as user stories, 
-          based on an application's features. A feature should be broken down into more than one story.
+          based on an application's features. A feature should be broken down into two or more stories.
           Describe the acceptance criteria for each story in the given, when and then format.
           
           Return the answer in this HTML format for each story: {HTML_STORIES_FORMAT} 
@@ -88,11 +88,12 @@ def test_code():
   id = request.form.get("id")
   res = queries.get(id)
   title = res.get("title")
+  feature = res.get("feature")
   
   # Get cached response
   test = res.get("test")
   if test:
-    return render_template("tests.html", html=test, id=id, title=title)
+    return render_template("tests.html", html=test, id=id, title=title, feature=feature)
   
   stories = res.get("html")
   completion = client.chat.completions.create(
@@ -121,96 +122,60 @@ def test_code():
   # Store in memory cache
   queries[id]["test"] = html
   
-  return render_template("tests.html", html=html, id=id, title=title)
+  return render_template("tests.html", html=html, id=id, title=title, feature=feature)
 
 HTML_STORIES_FORMAT = """
-<h3>Story 1: {{story title}}</h3>
-<p>{{ story description }}</p>
-<h4>Acceptance Criteria</h4>
-<ol>
-  <li><strong>given</strong> {{ given }},<strong>when</strong> {{ when }}, <strong>then</strong> {{ then }}</li>
-  <li><strong>given</strong> {{ given }},<strong>when</strong> {{ when }}, <strong>then</strong> {{ then }}</li>
-  <li><strong>given</strong> {{ given }},<strong>when</strong> {{ when }}, <strong>then</strong> {{ then }}</li>
-</ol>
+<div class="accordion-item">
+  <h3 class="accordion-header" id="heading{{ story title }}">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#story{{ story title }}" aria-expanded="true" aria-controls="collapseOne">
+      Story 1: {{ story title }}
+    </button>
+  </h3>
+  <div id="story{{ story title }}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#stories">
+    <div class="accordion-body">
+      <p>{{ story description }}</p>
+      <h4>Acceptance Criteria</h4>
+      <ol>
+        <li><strong>given</strong> {{ given }},<strong>when</strong> {{ when }}, <strong>then</strong> {{ then }}</li>
+        <li><strong>given</strong> {{ given }},<strong>when</strong> {{ when }}, <strong>then</strong> {{ then }}</li>
+        <li><strong>given</strong> {{ given }},<strong>when</strong> {{ when }}, <strong>then</strong> {{ then }}</li>
+      </ol>
+    </div>
+  </div>
+</div>
 """
 
 HTML_TEST_FORMAT = """
-<h2>{{ Story }}</h2>
-<p>{{ Story description }}</p>
-<h4>Test scenarios</h4>
-<h5>Positive</h5>
-<ul>
-  <li>
-    <p><strong>Given</strong>: {{ given }}</p>
-    <p><strong>When</strong>: {{ when }}</p>
-    <p><strong>Then</strong>: {{ then }}</p>
-    <p><strong>test data</strong>: {{ test data }}</p>
-    <div class="accordion" id="accordion{{ given when then }}>
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="heading{{ given when then }}">
-          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#code{{ given when then }}" aria-expanded="true" aria-controls="collapseOne">
-            See sample code
-          </button>
-        </h2>
-        <div id="code{{ given when then }}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordion{{ given when then }}">
-          <div class="accordion-body">
-            <pre style="white-space: pre-wrap;">
-              <code>{{ test sample code }}</code>
-            </pre>
+<div class="accordion-item">
+  <h3 class="accordion-header" id="heading{{ story title }}">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#story{{ story title }}" aria-expanded="true" aria-controls="collapseOne">
+      Story 1: {{ story title }}
+    </button>
+  </h3>
+  <div id="story{{ story title }}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#stories">
+    <div class="accordion-body">
+      <p class="lead">{{ Test Type e.g. positive, negative, edge case, functional, non-functional, integration, end-to-end etc }}</p>
+      <p><strong>Given</strong>: {{ given }}</p>
+      <p><strong>When</strong>: {{ when }}</p>
+      <p><strong>Then</strong>: {{ then }}</p>
+      <p><strong>test data</strong>: {{ test data }}</p>
+      <div class="accordion" id="accordion{{ given when then }}>
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="heading{{ given when then }}">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#code{{ given when then }}" aria-expanded="true" aria-controls="collapseOne">
+              See sample code in {{ coding language and tools }}
+            </button>
+          </h2>
+          <div id="code{{ given when then }}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordion{{ given when then }}">
+            <div class="accordion-body">
+              <pre style="white-space: pre-wrap;">
+                <code>{{ test sample code }}</code>
+              </pre>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </li>
-</ul>
-<h5>Negative</h5>
-<ul>
-  <li>
-    <p><strong>Given</strong>: {{ given }}</p>
-    <p><strong>When</strong>: {{ when }}</p>
-    <p><strong>Then</strong>: {{ then }}</p>
-    <p><strong>test data</strong>: {{ test data }}</p>
-    <div class="accordion" id="accordion{{ given when then }}>
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="heading{{ given when then }}">
-          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#code{{ given when then }}" aria-expanded="true" aria-controls="collapseOne">
-            See sample code
-          </button>
-        </h2>
-        <div id="code{{ given when then }}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordion{{ given when then }}">
-          <div class="accordion-body">
-            <pre style="white-space: pre-wrap;">
-              <code>{{ test sample code }}</code>
-            </pre>
-          </div>
-        </div>
-      </div>
-    </div>
-  </li>
-</ul>
-<h5>Edge cases</h5>
-<ul>
-  <li>
-    <p><strong>Given</strong>: {{ given }}</p>
-    <p><strong>When</strong>: {{ when }}</p>
-    <p><strong>Then</strong>: {{ then }}</p>
-    <p><strong>test data</strong>: {{ test data }}</p>
-    <div class="accordion" id="accordion{{ given when then }}>
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="heading{{ given when then }}">
-          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#code{{ given when then }}" aria-expanded="true" aria-controls="collapseOne">
-            See sample code
-          </button>
-        </h2>
-        <div id="code{{ given when then }}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordion{{ given when then }}">
-          <div class="accordion-body">
-            <pre style="white-space: pre-wrap;">
-              <code>{{ test sample code }}</code>
-            </pre>
-          </div>
-        </div>
-      </div>
-    </div>
-  </li>
-</ul>
+  </div>
+</div>
 """
