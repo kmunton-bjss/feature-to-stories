@@ -35,6 +35,9 @@ def stories():
 @app.post("/stories")
 def stories_result():
   feature = request.form.get("feature")
+  if not feature:
+    return render_template("error.html", error="Must enter a feature description")
+  
   id = str(hash(feature))
   
   # Get cached response
@@ -44,7 +47,7 @@ def stories_result():
   
   completionStories = client.chat.completions.create(
     model=openai_deployment, # model = "deployment_name".
-    temperature=0.1,
+    temperature=0.5,
     messages=[
       {
           "role": "system", "content": "Act as a business analyst"
@@ -64,7 +67,7 @@ def stories_result():
   
   completionTitle = client.chat.completions.create(
     model=openai_deployment, # model = "deployment_name".
-    temperature=0.1,
+    temperature=0.5,
     messages=[
       {
           "role": "user", "content": f"""Create a title for a feature description and only return the title. 
@@ -94,13 +97,13 @@ def test_code():
   stories = res.get("html")
   completion = client.chat.completions.create(
     model=openai_deployment, # model = "deployment_name".
-    temperature=0.1,
+    temperature=0.5,
     messages=[
       {
           "role": "system", "content": "Act as a quality assurance developer"
       },
       {
-          "role": "user", "content": f"""Based on stories list comprehensive test scenarios 
+          "role": "user", "content": f"""Based on user stories list comprehensive test scenarios 
           with positive, negative and edge cases based on the acceptance criteria for each story. 
           The tests should cover all types: integration, end-to-end, functional and non-functional tests.
           Make sure there is at least the same number of tests (or more) as the number of acceptance criteria for each story. 
@@ -142,9 +145,22 @@ HTML_TEST_FORMAT = """
     <p><strong>When</strong>: {{ when }}</p>
     <p><strong>Then</strong>: {{ then }}</p>
     <p><strong>test data</strong>: {{ test data }}</p>
-    <pre style="border: 1px solid black; border-radius: 25px; padding: 10px; white-space: pre-wrap;">
-      <code>{{ test sample code }}</code>
-    </pre>
+    <div class="accordion" id="accordion{{ given when then }}>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="heading{{ given when then }}">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#code{{ given when then }}" aria-expanded="true" aria-controls="collapseOne">
+            See sample code
+          </button>
+        </h2>
+        <div id="code{{ given when then }}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordion{{ given when then }}">
+          <div class="accordion-body">
+            <pre style="white-space: pre-wrap;">
+              <code>{{ test sample code }}</code>
+            </pre>
+          </div>
+        </div>
+      </div>
+    </div>
   </li>
 </ul>
 <h5>Negative</h5>
@@ -154,9 +170,22 @@ HTML_TEST_FORMAT = """
     <p><strong>When</strong>: {{ when }}</p>
     <p><strong>Then</strong>: {{ then }}</p>
     <p><strong>test data</strong>: {{ test data }}</p>
-    <pre style="border: 1px solid black; border-radius: 25px; padding: 10px; white-space: pre-wrap;">
-      <code>{{ test sample code }}</code>
-    </pre>
+    <div class="accordion" id="accordion{{ given when then }}>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="heading{{ given when then }}">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#code{{ given when then }}" aria-expanded="true" aria-controls="collapseOne">
+            See sample code
+          </button>
+        </h2>
+        <div id="code{{ given when then }}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordion{{ given when then }}">
+          <div class="accordion-body">
+            <pre style="white-space: pre-wrap;">
+              <code>{{ test sample code }}</code>
+            </pre>
+          </div>
+        </div>
+      </div>
+    </div>
   </li>
 </ul>
 <h5>Edge cases</h5>
@@ -166,9 +195,22 @@ HTML_TEST_FORMAT = """
     <p><strong>When</strong>: {{ when }}</p>
     <p><strong>Then</strong>: {{ then }}</p>
     <p><strong>test data</strong>: {{ test data }}</p>
-    <pre style="border: 1px solid black; border-radius: 25px; padding: 10px; white-space: pre-wrap;">
-      <code>{{ test sample code }}</code>
-    </pre>
+    <div class="accordion" id="accordion{{ given when then }}>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="heading{{ given when then }}">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#code{{ given when then }}" aria-expanded="true" aria-controls="collapseOne">
+            See sample code
+          </button>
+        </h2>
+        <div id="code{{ given when then }}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordion{{ given when then }}">
+          <div class="accordion-body">
+            <pre style="white-space: pre-wrap;">
+              <code>{{ test sample code }}</code>
+            </pre>
+          </div>
+        </div>
+      </div>
+    </div>
   </li>
 </ul>
 """
