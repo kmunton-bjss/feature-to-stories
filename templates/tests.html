@@ -20,13 +20,13 @@
     </div>
   {% endif %}
   {% if title %}
-    <h1>Feature: {{ title }}</h1>
+    <h1>Feature - {{ title }}</h1>
   {% endif %}
   {% if feature %}
     <p>{{ feature }}</p>
   {% endif %}
   {% if html %}
-    <h2>Test scenarios</h2>
+    <h2>AI Generated Test Scenarios</h2>
     <div class="accordion" id="stories">
       {{ html |safe }}
     </div>
