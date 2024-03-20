@@ -122,7 +122,7 @@ def test_code():
           with positive, negative and edge case tests. 
           Base the tests on the acceptance criteria for each story. 
           When appropriate, also include non-functional tests. 
-          Make sure there is at least the same number of tests as the number of acceptance criteria for each story. 
+          Make sure there is tests for all stories and all acceptance criteria.
           Include sample test data for each test and create sample code for each test scenario. 
           Use Playwright tool syntax, Jest library syntax and JavaScript ES modules syntax for the sample code. 
           
