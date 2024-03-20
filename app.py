@@ -106,9 +106,20 @@ def wireframe_result():
     return render_template("wireframe.html", url=res.get("url"), feature=feature)
   
   # Change to using DALLE
-  url = "https://balsamiq.com/assets/learn/articles/account-setup-wireframe.png"
-  
+  client = AzureOpenAI(
+    api_version='2024-02-01',
+    azure_endpoint=os.getenv('OPENAI_DALLE_ENDPOINT'),
+    api_key=os.getenv('OPENAI_DALLE_KEY'),
+  )
 
+  result = client.images.generate(
+    model = 'Dalle3',
+    prompt = f"""Create a website wireframe for a weather application that includes this {feature}""",
+    n = 1
+  )
+
+  url = json.loads(result.model_dump_json())['data'][0]['url']
+  
   # Store in memory cache
   ui_queries[id] = {"url": url}
 
@@ -283,20 +294,20 @@ HTML_TEST_FORMAT = """
 </div>
 """
 
-@app.get('/wireframe')
-def wireframe():
-  feature = request.form.get("wireframe")
+# @app.get('/wireframe')
+# def wireframe():
+#   feature = request.form.get("wireframe")
 
-  client = AzureOpenAI(
-    api_version='2024-02-01',
-    azure_endpoint=os.environ['OPENAI_DALLE_ENDPOINT'],
-    api_key=os.environ['OPENAI_DALLE_KEY'],
-  )
+#   client = AzureOpenAI(
+#     api_version='2024-02-01',
+#     azure_endpoint=os.environ['OPENAI_DALLE_ENDPOINT'],
+#     api_key=os.environ['OPENAI_DALLE_KEY'],
+#   )
 
-  result = client.images.generate(
-    model = 'Dalle3',
-    prompt = <user's message>,
-    n = 1
-  )
+#   result = client.images.generate(
+#     model = 'Dalle3',
+#     prompt = <user's message>,
+#     n = 1
+#   )
 
-  image_url = json.loads(result.model_dump_json())['data'][0]['url']
+#   image_url = json.loads(result.model_dump_json())['data'][0]['url']
