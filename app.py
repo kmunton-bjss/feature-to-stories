@@ -15,6 +15,7 @@ client = AzureOpenAI(
 
 # Memory cache
 queries = {}
+ui_queries = {}
 
 app = Flask(__name__)
 
@@ -88,6 +89,28 @@ def stories_result():
   queries[id] = {"html": html, "feature": feature, "title": title, "test": ""}
 
   return render_template("stories.html", html=html, feature=feature, id=id, title=title)
+
+@app.post("/wireframe")
+def wireframe_result():
+  feature = request.form.get("feature")
+  if not feature:
+    return render_template("error.html", error="Must enter a UI feature description")
+  
+  id = str(hash(feature))
+  
+  # Get cached response
+  res = ui_queries.get(id, -1)
+  if res != -1:
+    return render_template("wireframe.html", url=res.get("url"), feature=feature)
+  
+  # Change to using DALLE
+  url = "https://balsamiq.com/assets/learn/articles/account-setup-wireframe.png"
+  
+
+  # Store in memory cache
+  ui_queries[id] = {"url": url}
+
+  return render_template("wireframe.html", url=url, feature=feature)
 
 @app.post("/stories/tests")
 def test_code():
