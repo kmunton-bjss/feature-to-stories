@@ -22,6 +22,12 @@
     <textarea placeholder="The feature is..." form="ticket" name="feature" style="width: 80vw; height: 50vh;" class="form-control" required id="feature"></textarea>
     <button type="submit" form="ticket" style="cursor: pointer;" class="btn btn-primary" id="storyButton" onclick="changeToLoading()">Generate Stories</button>
   </form>
+  <h2>Enter UI Feature --> Generate UI Wireframe</h2>
+  <form action="/wireframe" method="post" id="wireframe" 
+  style="display: flex; flex-direction: column; min-height: 80vh; align-items: center; justify-content: space-evenly;">
+    <textarea placeholder="The feature is..." form="wireframe" name="feature" style="width: 80vw; height: 50vh;" class="form-control" required id="wireframeInput"></textarea>
+    <button type="submit" form="wireframe" style="cursor: pointer;" class="btn btn-primary" id="wireframeButton" onclick="changeToLoadingWireframe()">Generate Wireframe</button>
+  </form>
   <script>
     function changeToLoading() {
       const featureInput = document.getElementById("feature")
@@ -31,6 +37,18 @@
         form.submit()
         featureInput.disabled = true
         const button = document.getElementById("storyButton")
+        button.disabled = true
+        button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating Stories...'
+      }
+    }
+    function changeToLoadingWireframe() {
+      const featureInput = document.getElementById("wireframeInput")
+      const featureText = featureInput.value
+      if (featureText) {
+        const form = document.getElementById("wireframe")
+        form.submit()
+        featureInput.disabled = true
+        const button = document.getElementById("wireframeButton")
         button.disabled = true
         button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating Stories...'
       }

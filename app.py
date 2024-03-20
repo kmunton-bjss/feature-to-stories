@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, render_template, redirect
 from openai import AzureOpenAI
 from dotenv import load_dotenv
+import json
 load_dotenv()
 
 openai_endpoint = os.getenv("OPENAI_ENDPOINT")
@@ -15,6 +16,7 @@ client = AzureOpenAI(
 
 # Memory cache
 queries = {}
+ui_queries = {}
 
 app = Flask(__name__)
 
@@ -66,6 +68,7 @@ def stories_result():
 
           The feature is: {feature}"""
       },
+
     ]
   )
   html = completionStories.choices[0].message.content
@@ -88,6 +91,39 @@ def stories_result():
   queries[id] = {"html": html, "feature": feature, "title": title, "test": ""}
 
   return render_template("stories.html", html=html, feature=feature, id=id, title=title)
+
+@app.post("/wireframe")
+def wireframe_result():
+  feature = request.form.get("feature")
+  if not feature:
+    return render_template("error.html", error="Must enter a UI feature description")
+  
+  id = str(hash(feature))
+  
+  # Get cached response
+  res = ui_queries.get(id, -1)
+  if res != -1:
+    return render_template("wireframe.html", url=res.get("url"), feature=feature)
+  
+  # Change to using DALLE
+  client = AzureOpenAI(
+    api_version='2024-02-01',
+    azure_endpoint=os.getenv('OPENAI_DALLE_ENDPOINT'),
+    api_key=os.getenv('OPENAI_DALLE_KEY'),
+  )
+
+  result = client.images.generate(
+    model = 'Dalle3',
+    prompt = f"""Create a website wireframe for a weather application that includes this {feature}""",
+    n = 1
+  )
+
+  url = json.loads(result.model_dump_json())['data'][0]['url']
+  
+  # Store in memory cache
+  ui_queries[id] = {"url": url}
+
+  return render_template("wireframe.html", url=url, feature=feature)
 
 @app.post("/stories/tests")
 def test_code():
@@ -258,3 +294,21 @@ HTML_TEST_FORMAT = """
   </div>
 </div>
 """
+
+# @app.get('/wireframe')
+# def wireframe():
+#   feature = request.form.get("wireframe")
+
+#   client = AzureOpenAI(
+#     api_version='2024-02-01',
+#     azure_endpoint=os.environ['OPENAI_DALLE_ENDPOINT'],
+#     api_key=os.environ['OPENAI_DALLE_KEY'],
+#   )
+
+#   result = client.images.generate(
+#     model = 'Dalle3',
+#     prompt = <user's message>,
+#     n = 1
+#   )
+
+#   image_url = json.loads(result.model_dump_json())['data'][0]['url']
