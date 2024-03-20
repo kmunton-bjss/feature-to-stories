@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, render_template, redirect
 from openai import AzureOpenAI
 from dotenv import load_dotenv
+import json
 load_dotenv()
 
 openai_endpoint = os.getenv("OPENAI_ENDPOINT")
@@ -67,6 +68,7 @@ def stories_result():
 
           The feature is: {feature}"""
       },
+
     ]
   )
   html = completionStories.choices[0].message.content
@@ -145,7 +147,7 @@ def test_code():
           with positive, negative and edge case tests. 
           Base the tests on the acceptance criteria for each story. 
           When appropriate, also include non-functional tests. 
-          Make sure there is tests for all stories and all acceptance criteria.
+          Make sure there is at least the same number of tests as the number of acceptance criteria for each story. 
           Include sample test data for each test and create sample code for each test scenario. 
           Use Playwright tool syntax, Jest library syntax and JavaScript ES modules syntax for the sample code. 
           
@@ -280,3 +282,21 @@ HTML_TEST_FORMAT = """
   </div>
 </div>
 """
+
+@app.get('/wireframe')
+def wireframe():
+  feature = request.form.get("wireframe")
+
+  client = AzureOpenAI(
+    api_version='2024-02-01',
+    azure_endpoint=os.environ['OPENAI_DALLE_ENDPOINT'],
+    api_key=os.environ['OPENAI_DALLE_KEY'],
+  )
+
+  result = client.images.generate(
+    model = 'Dalle3',
+    prompt = <user's message>,
+    n = 1
+  )
+
+  image_url = json.loads(result.model_dump_json())['data'][0]['url']
