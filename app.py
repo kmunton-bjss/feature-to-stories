@@ -55,14 +55,16 @@ def stories_result():
     temperature=0.5,
     messages=[
       {
-          "role": "system", "content": "Act as a business analyst"
+          "role": "system", "content": "I am a very experienced business analyst"
       },
       {
-          "role": "user", "content": f"""Breakdown a feature description into individual user stories. 
-          A feature should be broken down into two or more user stories. 
+          "role": "user", "content": f"""
+          I will give you the description of one feature of an application.
+          The description will be in bullet points. Conbine the similar or related bullet points.
+          Breakdown each bullet point into a few individual user stories.
           Each user story should have an informative title. 
           Each user story should have a description that follows the format "As a [persona], I [want to], [so that]". 
-          Each user story should have several acceptance criteria in the given, when and then format. 
+          Each user story should have several acceptance criteria in the "given..., when... and then..." format. 
           
           Return the answer in this HTML format for each user story: {HTML_STORIES_FORMAT} 
 
@@ -156,14 +158,15 @@ def test_code():
     temperature=0.5,
     messages=[
       {
-          "role": "system", "content": "Act as a quality assurance developer"
+          "role": "system", "content": "I'm a very experienced quality assurance developer"
       },
       {
-          "role": "user", "content": f"""Based on user stories list comprehensive test scenarios 
-          with positive, negative and edge case tests. 
-          Base the tests on the acceptance criteria for each story. 
-          When appropriate, also include non-functional tests. 
-          Make sure there is at least the same number of tests as the number of acceptance criteria for each story. 
+          "role": "user", "content": f"""Based on comprehensive user stories list. Use Gherkin declarative style. Use Given, When, Then.
+         Generate all Test scenarios based on user story and acceptance criteria.
+         Including happy path scenarios, negative scenarios and edge cases.
+          Write all tests for a given acceptence criteria.
+          When appropriate, also include non-functional tests and accesibility tests. 
+          Make sure there is tests for all stories and all acceptance criteria.
           Include sample test data for each test and create sample code for each test scenario. 
           Use Playwright tool syntax, Jest library syntax and JavaScript ES modules syntax for the sample code. 
           
