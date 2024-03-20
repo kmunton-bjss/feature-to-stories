@@ -153,11 +153,7 @@ def test_code():
     temperature=0.5,
     messages=[
       {
-<<<<<<< Updated upstream
-          "role": "system", "content": "Act as a overacheiving tester"
-=======
           "role": "system", "content": "I'm a very experienced quality assurance developer"
->>>>>>> Stashed changes
       },
       {
           "role": "user", "content": f"""Based on comprehensive user stories list. Use Gherkin declarative style. Use Given, When, Then.
